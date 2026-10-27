@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { GoogleAuthProvider, signInWithCredential, signInWithEmailAndPassword } from 'firebase/auth';
 import { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { GoogleIcon } from '../components/googleIcon';
 import { Message, Msg } from '../components/message';
 import { PasswordInput } from '../components/passwordInput';
@@ -75,8 +75,9 @@ export default function LoginScreen() {
     <View style={s.screen}>
       <ScrollView contentContainerStyle={s.scroll}>
         <View style={s.card}>
-          {/* Logo placeholder — swap with the finished logo later */}
-          <View style={s.logoPlaceholder} />
+          {/* Logo placeholder, but I swapped it with the finished logo */}
+          {/* <View style={s.logoPlaceholder} /> */}
+          <Image source={require('../../assets/images/logo-jeje.png')} style={s.logo} resizeMode="contain" />
 
           <Text style={s.appName}>LesKita</Text>
 
@@ -160,12 +161,18 @@ const s = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     elevation: 3,
   },
-  logoPlaceholder: {
+  // logoPlaceholder: {
+  //   alignSelf: 'center',
+  //   width: 72,
+  //   height: 72,
+  //   borderRadius: 18,
+  //   backgroundColor: '#EDF2F1',
+  //   marginBottom: 12,
+  // },
+  logo: {
     alignSelf: 'center',
     width: 72,
     height: 72,
-    borderRadius: 18,
-    backgroundColor: '#EDF2F1',
     marginBottom: 12,
   },
   appName: {

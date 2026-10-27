@@ -9,13 +9,11 @@ import {
 } from 'firebase/auth';
 import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
-import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { GoogleIcon } from '../components/googleIcon';
 import { Message, Msg } from '../components/message';
 import { PasswordInput } from '../components/passwordInput';
 import { auth, db } from '../lib/firebase';
-import { colors } from '../theme/colors';
-import { styles } from '../theme/styles';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -29,6 +27,8 @@ export default function RegisterScreen() {
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     webClientId: '826915862685-10n728nf6n1aqiveo1nb4o40bj9b8up4.apps.googleusercontent.com',
+    responseType: 'id_token',
+    scopes: ['openid', 'profile', 'email'],
   });
 
   useEffect(() => {
@@ -48,9 +48,9 @@ export default function RegisterScreen() {
             },
             { merge: true }
           );
-          setMsg({ text: 'Daftar dengan Google berhasil!', ok: true });
+          setMsg({ text: 'Signed up with Google successfully!', ok: true });
         } catch (error) {
-          setMsg({ text: 'Gagal daftar dengan Google.', ok: false });
+          setMsg({ text: 'Failed to sign up with Google.', ok: false });
         } finally {
           setLoading(false);
         }
@@ -64,15 +64,15 @@ export default function RegisterScreen() {
     const mail = email.trim();
 
     if (!fullName || !mail || !password || !confirm) {
-      setMsg({ text: 'Semua kolom harus diisi.', ok: false });
+      setMsg({ text: 'All fields are required.', ok: false });
       return;
     }
     if (password.length < 6) {
-      setMsg({ text: 'Password minimal 6 karakter.', ok: false });
+      setMsg({ text: 'Password must be at least 6 characters.', ok: false });
       return;
     }
     if (password !== confirm) {
-      setMsg({ text: 'Konfirmasi password tidak sama.', ok: false });
+      setMsg({ text: 'Passwords do not match.', ok: false });
       return;
     }
 
@@ -88,13 +88,13 @@ export default function RegisterScreen() {
       });
       router.replace('/');
     } catch (error: any) {
-      let text = 'Terjadi kesalahan. Coba lagi.';
+      let text = 'Something went wrong. Please try again.';
       if (error.code === 'auth/email-already-in-use') {
-        text = 'Email sudah terdaftar.';
+        text = 'This email is already registered.';
       } else if (error.code === 'auth/invalid-email') {
-        text = 'Format email tidak valid.';
+        text = 'Invalid email format.';
       } else if (error.code === 'auth/weak-password') {
-        text = 'Password terlalu lemah.';
+        text = 'Password is too weak.';
       }
       setMsg({ text, ok: false });
     } finally {
@@ -103,78 +103,212 @@ export default function RegisterScreen() {
   };
 
   return (
-    <View style={styles.flex}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.form}>
-          <Text style={styles.title}>Daftar</Text>
+    <View style={s.screen}>
+      <ScrollView contentContainerStyle={s.scroll}>
+        <View style={s.card}>
+          {/* Logo placeholder, but I swapped it with the finished logo */}
+          {/* <View style={s.logoPlaceholder} /> */}
+          <Image source={require('../../assets/images/logo-jeje.png')} style={s.logo} resizeMode="contain" />
+
+          <Text style={s.appName}>LesKita</Text>
+
+          <View style={s.tabRow}>
+            <TouchableOpacity style={s.tab} onPress={() => router.push('/')}>
+              <Text style={s.tabText}>Login</Text>
+            </TouchableOpacity>
+            <View style={[s.tab, s.tabActive]}>
+              <Text style={s.tabTextActive}>Register</Text>
+            </View>
+          </View>
+
           <Message msg={msg} />
+
+          <Text style={s.label}>Full Name</Text>
           <TextInput
-            style={styles.input}
-            placeholder="Nama Lengkap"
-            placeholderTextColor={colors.muted}
+            style={s.input}
+            placeholder="e.g. Sarah Amelia"
+            placeholderTextColor="#9AA5A3"
             value={name}
             onChangeText={setName}
           />
+
+          <Text style={s.label}>Email</Text>
           <TextInput
-            style={styles.input}
-            placeholder="Email"
-            placeholderTextColor={colors.muted}
+            style={s.input}
+            placeholder="name@email.com"
+            placeholderTextColor="#9AA5A3"
             value={email}
             onChangeText={setEmail}
             autoCapitalize="none"
             keyboardType="email-address"
           />
-          <PasswordInput value={password} onChangeText={setPassword} placeholder="Password" />
-          <PasswordInput
-            value={confirm}
-            onChangeText={setConfirm}
-            placeholder="Konfirmasi password"
-          />
+
+          <Text style={s.label}>Password</Text>
+          <PasswordInput value={password} onChangeText={setPassword} placeholder="At least 6 characters" />
+
+          <Text style={s.label}>Confirm Password</Text>
+          <PasswordInput value={confirm} onChangeText={setConfirm} placeholder="Re-enter your password" />
 
           <TouchableOpacity
-            style={[styles.button, loading && { opacity: 0.6 }]}
+            style={[s.button, loading && { opacity: 0.6 }]}
             onPress={handleRegister}
             disabled={loading}
           >
-            <Text style={styles.buttonText}>{loading ? 'Memproses...' : 'Daftar'}</Text>
+            <Text style={s.buttonText}>{loading ? 'Please wait...' : 'Create Account'}</Text>
           </TouchableOpacity>
 
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 8 }}>
-            <View style={{ flex: 1, height: 1, backgroundColor: colors.border }} />
-            <Text style={{ marginHorizontal: 8, color: colors.muted }}>atau</Text>
-            <View style={{ flex: 1, height: 1, backgroundColor: colors.border }} />
+          <View style={s.dividerRow}>
+            <View style={s.dividerLine} />
+            <Text style={s.dividerText}>OR</Text>
+            <View style={s.dividerLine} />
           </View>
 
           <TouchableOpacity
-            style={[
-              styles.button,
-              {
-                backgroundColor: '#ffffff',
-                borderWidth: 1,
-                borderColor: colors.border,
-                marginBottom: 16,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-              },
-            ]}
+            style={[s.googleButton, loading && { opacity: 0.6 }]}
             onPress={() => promptAsync()}
             disabled={!request || loading}
           >
             <GoogleIcon size={20} />
-            <Text style={{ color: colors.text, fontWeight: '600', marginLeft: 10 }}>
-              Daftar dengan Google
-            </Text>
+            <Text style={s.googleButtonText}>Continue with Google</Text>
           </TouchableOpacity>
-
-          <View style={styles.row}>
-            <Text style={styles.rowText}>Sudah punya akun? </Text>
-            <TouchableOpacity onPress={() => router.push('/')}>
-              <Text style={styles.link}>Login</Text>
-            </TouchableOpacity>
-          </View>
         </View>
       </ScrollView>
     </View>
   );
 }
+
+const s = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: '#F3F6F6',
+  },
+  scroll: {
+    flexGrow: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  card: {
+    width: '100%',
+    maxWidth: 420,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 3,
+  },
+  // logoPlaceholder: {
+  //   alignSelf: 'center',
+  //   width: 72,
+  //   height: 72,
+  //   borderRadius: 18,
+  //   backgroundColor: '#EDF2F1',
+  //   marginBottom: 12,
+  // },
+  logo: {
+    alignSelf: 'center',
+    width: 72,
+    height: 72,
+    marginBottom: 12,
+  },
+  appName: {
+    textAlign: 'center',
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#1A2B2A',
+    marginBottom: 20,
+  },
+  tabRow: {
+    flexDirection: 'row',
+    backgroundColor: '#F0F3F3',
+    borderRadius: 12,
+    padding: 4,
+    marginBottom: 20,
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 9,
+    alignItems: 'center',
+  },
+  tabActive: {
+    backgroundColor: '#FFFFFF',
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 1 },
+    elevation: 1,
+  },
+  tabText: {
+    color: '#6B7280',
+    fontWeight: '600',
+  },
+  tabTextActive: {
+    color: '#1A2B2A',
+    fontWeight: '700',
+  },
+  label: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#1A2B2A',
+    marginBottom: 6,
+    marginTop: 12,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#E2E8EE',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 15,
+    color: '#1A2B2A',
+    backgroundColor: '#FAFBFC',
+  },
+  button: {
+    backgroundColor: '#1F6F5C',
+    borderRadius: 10,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginTop: 18,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 18,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#E2E8EE',
+  },
+  dividerText: {
+    marginHorizontal: 10,
+    color: '#9AA5A3',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  googleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8EE',
+    borderRadius: 10,
+    paddingVertical: 13,
+    backgroundColor: '#FFFFFF',
+  },
+  googleButtonText: {
+    marginLeft: 10,
+    color: '#1A2B2A',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+});
