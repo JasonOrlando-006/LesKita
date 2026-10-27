@@ -1,9 +1,7 @@
 import { router } from 'expo-router';
-import { sendPasswordResetEmail } from 'firebase/auth';
 import { useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Message, Msg } from '../components/message';
-import { auth } from '../lib/firebase';
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
@@ -11,30 +9,24 @@ export default function ForgotPasswordScreen() {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
 
-  const handleReset = async () => {
+  const handleReset = () => {
     const mail = email.trim();
     if (!mail) {
       setMsg({ text: 'Please enter your email address.', ok: false });
       return;
     }
+    if (!mail.includes('@')) {
+      setMsg({ text: 'Invalid email format.', ok: false });
+      return;
+    }
 
     setLoading(true);
     setMsg(null);
-    try {
-      await sendPasswordResetEmail(auth, mail);
+    setTimeout(() => {
+      setLoading(false);
       setSent(true);
       setMsg({ text: 'Reset link sent! Please check your inbox.', ok: true });
-    } catch (error: any) {
-      let text = 'Something went wrong. Please try again.';
-      if (error.code === 'auth/user-not-found') {
-        text = 'No account found with this email.';
-      } else if (error.code === 'auth/invalid-email') {
-        text = 'Invalid email format.';
-      }
-      setMsg({ text, ok: false });
-    } finally {
-      setLoading(false);
-    }
+    }, 400);
   };
 
   return (
@@ -49,7 +41,7 @@ export default function ForgotPasswordScreen() {
 
           <Text style={s.title}>Forgot Password?</Text>
           <Text style={s.subtitle}>
-            Enter your registered email and we'll send you a link to reset your password :)
+            No worries! Enter your registered email and we'll send you a link to reset your password.
           </Text>
 
           <Message msg={msg} />
@@ -82,89 +74,25 @@ export default function ForgotPasswordScreen() {
 }
 
 const s = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#F3F6F6',
-  },
-  scroll: {
-    flexGrow: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
+  screen: { flex: 1, backgroundColor: '#F3F6F6' },
+  scroll: { flexGrow: 1, alignItems: 'center', justifyContent: 'center', padding: 20 },
   card: {
-    width: '100%',
-    maxWidth: 420,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 24,
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 3,
+    width: '100%', maxWidth: 420, backgroundColor: '#FFFFFF', borderRadius: 20, padding: 24,
+    shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, elevation: 3,
   },
   backButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#F0F3F3',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 20,
+    width: 32, height: 32, borderRadius: 16, backgroundColor: '#F0F3F3',
+    alignItems: 'center', justifyContent: 'center', marginBottom: 20,
   },
-  backArrow: {
-    fontSize: 18,
-    color: '#1A2B2A',
-    marginTop: -2,
-  },
-  logo: {
-    alignSelf: 'center',
-    width: 72,
-    height: 72,
-    marginBottom: 16,
-  },
-  title: {
-    textAlign: 'center',
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#1A2B2A',
-    marginBottom: 8,
-  },
-  subtitle: {
-    textAlign: 'center',
-    fontSize: 13,
-    color: '#6B7280',
-    lineHeight: 19,
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#1A2B2A',
-    marginBottom: 6,
-    marginTop: 12,
-  },
+  backArrow: { fontSize: 18, color: '#1A2B2A', marginTop: -2 },
+  logo: { alignSelf: 'center', width: 72, height: 72, marginBottom: 16 },
+  title: { textAlign: 'center', fontSize: 20, fontWeight: '700', color: '#1A2B2A', marginBottom: 8 },
+  subtitle: { textAlign: 'center', fontSize: 13, color: '#6B7280', lineHeight: 19, marginBottom: 20 },
+  label: { fontSize: 13, fontWeight: '600', color: '#1A2B2A', marginBottom: 6, marginTop: 12 },
   input: {
-    borderWidth: 1,
-    borderColor: '#E2E8EE',
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 15,
-    color: '#1A2B2A',
-    backgroundColor: '#FAFBFC',
+    borderWidth: 1, borderColor: '#E2E8EE', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12,
+    fontSize: 15, color: '#1A2B2A', backgroundColor: '#FAFBFC',
   },
-  button: {
-    backgroundColor: '#1F6F5C',
-    borderRadius: 10,
-    paddingVertical: 14,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '700',
-  },
+  button: { backgroundColor: '#1F6F5C', borderRadius: 10, paddingVertical: 14, alignItems: 'center', marginTop: 20 },
+  buttonText: { color: '#FFFFFF', fontSize: 15, fontWeight: '700' },
 });

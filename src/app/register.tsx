@@ -1,21 +1,9 @@
-import * as Google from 'expo-auth-session/providers/google';
 import { router } from 'expo-router';
-import * as WebBrowser from 'expo-web-browser';
-import {
-  createUserWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithCredential,
-  updateProfile,
-} from 'firebase/auth';
-import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { GoogleIcon } from '../components/googleIcon';
 import { Message, Msg } from '../components/message';
 import { PasswordInput } from '../components/passwordInput';
-import { auth, db } from '../lib/firebase';
-
-WebBrowser.maybeCompleteAuthSession();
 
 export default function RegisterScreen() {
   const [name, setName] = useState('');
@@ -25,46 +13,16 @@ export default function RegisterScreen() {
   const [msg, setMsg] = useState<Msg>(null);
   const [loading, setLoading] = useState(false);
 
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    webClientId: '826915862685-10n728nf6n1aqiveo1nb4o40bj9b8up4.apps.googleusercontent.com',
-    responseType: 'id_token',
-    scopes: ['openid', 'profile', 'email'],
-  });
-
-  useEffect(() => {
-    const handleGoogleResponse = async () => {
-      if (response?.type === 'success') {
-        const { id_token } = response.params;
-        const credential = GoogleAuthProvider.credential(id_token);
-        setLoading(true);
-        try {
-          const result = await signInWithCredential(auth, credential);
-          await setDoc(
-            doc(db, 'users', result.user.uid),
-            {
-              name: result.user.displayName ?? '',
-              email: result.user.email ?? '',
-              createdAt: serverTimestamp(),
-            },
-            { merge: true }
-          );
-          setMsg({ text: 'Signed up with Google successfully!', ok: true });
-        } catch (error) {
-          setMsg({ text: 'Failed to sign up with Google.', ok: false });
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-    handleGoogleResponse();
-  }, [response]);
-
-  const handleRegister = async () => {
+  const handleRegister = () => {
     const fullName = name.trim();
     const mail = email.trim();
 
     if (!fullName || !mail || !password || !confirm) {
       setMsg({ text: 'All fields are required.', ok: false });
+      return;
+    }
+    if (!mail.includes('@')) {
+      setMsg({ text: 'Invalid email format.', ok: false });
       return;
     }
     if (password.length < 6) {
@@ -78,36 +36,24 @@ export default function RegisterScreen() {
 
     setLoading(true);
     setMsg(null);
-    try {
-      const result = await createUserWithEmailAndPassword(auth, mail, password);
-      await updateProfile(result.user, { displayName: fullName });
-      await setDoc(doc(db, 'users', result.user.uid), {
-        name: fullName,
-        email: mail,
-        createdAt: serverTimestamp(),
-      });
-      router.replace('/');
-    } catch (error: any) {
-      let text = 'Something went wrong. Please try again.';
-      if (error.code === 'auth/email-already-in-use') {
-        text = 'This email is already registered.';
-      } else if (error.code === 'auth/invalid-email') {
-        text = 'Invalid email format.';
-      } else if (error.code === 'auth/weak-password') {
-        text = 'Password is too weak.';
-      }
-      setMsg({ text, ok: false });
-    } finally {
+    setTimeout(() => {
       setLoading(false);
-    }
+      router.replace('/');
+    }, 400);
+  };
+
+  const handleGoogleRegister = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      router.replace('/home');
+    }, 400);
   };
 
   return (
     <View style={s.screen}>
       <ScrollView contentContainerStyle={s.scroll}>
         <View style={s.card}>
-          {/* Logo placeholder, but I swapped it with the finished logo */}
-          {/* <View style={s.logoPlaceholder} /> */}
           <Image source={require('../../assets/images/logo-jeje.png')} style={s.logo} resizeMode="contain" />
 
           <Text style={s.appName}>LesKita</Text>
@@ -165,8 +111,8 @@ export default function RegisterScreen() {
 
           <TouchableOpacity
             style={[s.googleButton, loading && { opacity: 0.6 }]}
-            onPress={() => promptAsync()}
-            disabled={!request || loading}
+            onPress={handleGoogleRegister}
+            disabled={loading}
           >
             <GoogleIcon size={20} />
             <Text style={s.googleButtonText}>Continue with Google</Text>
@@ -178,137 +124,35 @@ export default function RegisterScreen() {
 }
 
 const s = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#F3F6F6',
-  },
-  scroll: {
-    flexGrow: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
+  screen: { flex: 1, backgroundColor: '#F3F6F6' },
+  scroll: { flexGrow: 1, alignItems: 'center', justifyContent: 'center', padding: 20 },
   card: {
-    width: '100%',
-    maxWidth: 420,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 24,
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 3,
+    width: '100%', maxWidth: 420, backgroundColor: '#FFFFFF', borderRadius: 20, padding: 24,
+    shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, elevation: 3,
   },
-  // logoPlaceholder: {
-  //   alignSelf: 'center',
-  //   width: 72,
-  //   height: 72,
-  //   borderRadius: 18,
-  //   backgroundColor: '#EDF2F1',
-  //   marginBottom: 12,
-  // },
-  logo: {
-    alignSelf: 'center',
-    width: 72,
-    height: 72,
-    marginBottom: 12,
-  },
-  appName: {
-    textAlign: 'center',
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#1A2B2A',
-    marginBottom: 20,
-  },
-  tabRow: {
-    flexDirection: 'row',
-    backgroundColor: '#F0F3F3',
-    borderRadius: 12,
-    padding: 4,
-    marginBottom: 20,
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 10,
-    borderRadius: 9,
-    alignItems: 'center',
-  },
+  logo: { alignSelf: 'center', width: 72, height: 72, marginBottom: 12 },
+  appName: { textAlign: 'center', fontSize: 22, fontWeight: '700', color: '#1A2B2A', marginBottom: 20 },
+  tabRow: { flexDirection: 'row', backgroundColor: '#F0F3F3', borderRadius: 12, padding: 4, marginBottom: 20 },
+  tab: { flex: 1, paddingVertical: 10, borderRadius: 9, alignItems: 'center' },
   tabActive: {
-    backgroundColor: '#FFFFFF',
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 1 },
-    elevation: 1,
+    backgroundColor: '#FFFFFF', shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 4,
+    shadowOffset: { width: 0, height: 1 }, elevation: 1,
   },
-  tabText: {
-    color: '#6B7280',
-    fontWeight: '600',
-  },
-  tabTextActive: {
-    color: '#1A2B2A',
-    fontWeight: '700',
-  },
-  label: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#1A2B2A',
-    marginBottom: 6,
-    marginTop: 12,
-  },
+  tabText: { color: '#6B7280', fontWeight: '600' },
+  tabTextActive: { color: '#1A2B2A', fontWeight: '700' },
+  label: { fontSize: 13, fontWeight: '600', color: '#1A2B2A', marginBottom: 6, marginTop: 12 },
   input: {
-    borderWidth: 1,
-    borderColor: '#E2E8EE',
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 15,
-    color: '#1A2B2A',
-    backgroundColor: '#FAFBFC',
+    borderWidth: 1, borderColor: '#E2E8EE', borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12,
+    fontSize: 15, color: '#1A2B2A', backgroundColor: '#FAFBFC',
   },
-  button: {
-    backgroundColor: '#1F6F5C',
-    borderRadius: 10,
-    paddingVertical: 14,
-    alignItems: 'center',
-    marginTop: 18,
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  dividerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 18,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#E2E8EE',
-  },
-  dividerText: {
-    marginHorizontal: 10,
-    color: '#9AA5A3',
-    fontSize: 12,
-    fontWeight: '600',
-  },
+  button: { backgroundColor: '#1F6F5C', borderRadius: 10, paddingVertical: 14, alignItems: 'center', marginTop: 18 },
+  buttonText: { color: '#FFFFFF', fontSize: 15, fontWeight: '700' },
+  dividerRow: { flexDirection: 'row', alignItems: 'center', marginVertical: 18 },
+  dividerLine: { flex: 1, height: 1, backgroundColor: '#E2E8EE' },
+  dividerText: { marginHorizontal: 10, color: '#9AA5A3', fontSize: 12, fontWeight: '600' },
   googleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#E2E8EE',
-    borderRadius: 10,
-    paddingVertical: 13,
-    backgroundColor: '#FFFFFF',
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', borderWidth: 1,
+    borderColor: '#E2E8EE', borderRadius: 10, paddingVertical: 13, backgroundColor: '#FFFFFF',
   },
-  googleButtonText: {
-    marginLeft: 10,
-    color: '#1A2B2A',
-    fontSize: 14,
-    fontWeight: '600',
-  },
+  googleButtonText: { marginLeft: 10, color: '#1A2B2A', fontSize: 14, fontWeight: '600' },
 });
