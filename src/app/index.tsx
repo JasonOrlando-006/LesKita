@@ -32,6 +32,7 @@ export default function LoginScreen() {
         try {
           await signInWithCredential(auth, credential);
           setMsg({ text: 'Signed in with Google successfully!', ok: true });
+          router.replace('/home'); // Redirect to home page after successful Google sign-in
         } catch (error) {
           setMsg({ text: 'Failed to sign in with Google.', ok: false });
         } finally {
@@ -53,7 +54,7 @@ export default function LoginScreen() {
     try {
       await signInWithEmailAndPassword(auth, email.trim(), password);
       setMsg({ text: 'Login successful. Welcome back!', ok: true });
-      // router.replace('/home');
+      router.replace('/home'); //Opened this command because I've made the home page
     } catch (error: any) {
       let text = 'Something went wrong. Please try again.';
       if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') {
