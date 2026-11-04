@@ -2,6 +2,8 @@ import Svg, { Circle, Path } from 'react-native-svg';
 
 type IconProps = { size?: number; color?: string };
 
+
+// NAVBAR
 export function HomeIcon({ size = 22, color = '#1A2B2A' }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -37,6 +39,8 @@ export function PersonIcon({ size = 22, color = '#1A2B2A' }: IconProps) {
     </Svg>
   );
 }
+
+// HALAMAN HOME
 
 export function SearchTabIcon({ size = 22, color = '#1A2B2A' }: IconProps) {
   return (
@@ -172,6 +176,8 @@ export function HouseKeyIcon({ size = 20, color = '#F39A1F' }: IconProps) {
   );
 }
 
+// HALAMAN SEARCH
+
 export function WhatsAppIcon({ size = 18, color = '#FFFFFF' }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
@@ -275,6 +281,52 @@ export function MapPinFillIcon({ size = 12, color = '#1F6F5C' }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
       <Path d="M12 22s7-7.2 7-12.5A7 7 0 0 0 5 9.5C5 14.8 12 22 12 22Z" />
+    </Svg>
+  );
+}
+
+// HALAMAN NOTIFICATION
+
+export function ClockIcon({ size = 18, color = '#1F6F5C' }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Circle cx="12" cy="12" r="9" stroke={color} strokeWidth={2} />
+      <Path d="M12 7v5l3.5 2" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+}
+
+export function CalendarIcon({ size = 13, color = '#1F6F5C' }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path d="M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" stroke={color} strokeWidth={2} strokeLinejoin="round" />
+      <Path d="M3 10h18M8 3v4M16 3v4" stroke={color} strokeWidth={2} strokeLinecap="round" />
+    </Svg>
+  );
+}
+
+export function MessageIcon({ size = 13, color = '#B4760E' }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path d="M4 5h16v11H9l-5 4V5Z" stroke={color} strokeWidth={2} strokeLinejoin="round" />
+    </Svg>
+  );
+}
+
+export function WalletIcon({ size = 20, color = '#F39A1F' }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path d="M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Z" stroke={color} strokeWidth={2} strokeLinejoin="round" />
+      <Path d="M14 12h4M14 12a1.5 1.5 0 1 0 0 0Z" stroke={color} strokeWidth={2} strokeLinejoin="round" />
+    </Svg>
+  );
+}
+
+export function WarningIcon({ size = 12, color = '#B4760E' }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path d="M12 4 2.5 20h19L12 4Z" stroke={color} strokeWidth={2} strokeLinejoin="round" />
+      <Path d="M12 10v4M12 17.2v.01" stroke={color} strokeWidth={2} strokeLinecap="round" />
     </Svg>
   );
 }
