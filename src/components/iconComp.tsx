@@ -330,3 +330,51 @@ export function WarningIcon({ size = 12, color = '#B4760E' }: IconProps) {
     </Svg>
   );
 }
+
+// PROFILE
+export function SlidersIcon({ size = 20, color = '#1A2B2A' }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path d="M4 7h10M17 7h3M4 17h3M10 17h10" stroke={color} strokeWidth={2} strokeLinecap="round" />
+      <Circle cx="14" cy="7" r="2.3" fill="#FFFFFF" stroke={color} strokeWidth={2} />
+      <Circle cx="7" cy="17" r="2.3" fill="#FFFFFF" stroke={color} strokeWidth={2} />
+    </Svg>
+  );
+}
+
+export function LogoutIcon({ size = 20, color = '#DC4A4A' }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3" stroke={color} strokeWidth={2} strokeLinecap="round" />
+      <Path d="M15 8l4 4-4 4M19 12H9" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+}
+
+export function BriefcaseIcon({ size = 13, color = '#B4760E' }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path d="M4 8h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z" stroke={color} strokeWidth={2} strokeLinejoin="round" />
+      <Path d="M9 8V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18" stroke={color} strokeWidth={2} strokeLinecap="round" />
+    </Svg>
+  );
+}
+
+export function CheckCircleIcon({ size = 13, color = '#FFFFFF' }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Circle cx="12" cy="12" r="9" stroke={color} strokeWidth={2} />
+      <Path d="M8 12.3l2.5 2.5L16 9.5" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+}
+
+export function TargetIcon({ size = 13, color = '#FFFFFF' }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Circle cx="12" cy="12" r="8" stroke={color} strokeWidth={2} />
+      <Circle cx="12" cy="12" r="3.5" stroke={color} strokeWidth={2} />
+      <Circle cx="12" cy="12" r="1" fill={color} />
+    </Svg>
+  );
+}
