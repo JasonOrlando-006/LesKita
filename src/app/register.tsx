@@ -25,8 +25,8 @@ export default function RegisterScreen() {
       setMsg({ text: 'Invalid email format.', ok: false });
       return;
     }
-    if (password.length < 6) {
-      setMsg({ text: 'Password must be at least 6 characters.', ok: false });
+    if (password.length < 6 || password.length > 12) {
+      setMsg({ text: 'Password must be 6-12 characters.', ok: false });
       return;
     }
     if (password !== confirm) {
@@ -90,10 +90,20 @@ export default function RegisterScreen() {
           />
 
           <Text style={s.label}>Password</Text>
-          <PasswordInput value={password} onChangeText={setPassword} placeholder="At least 6 characters" />
+          <PasswordInput
+            value={password}
+            onChangeText={setPassword}
+            placeholder="6-12 characters"
+            maxLength={12}
+          />
 
           <Text style={s.label}>Confirm Password</Text>
-          <PasswordInput value={confirm} onChangeText={setConfirm} placeholder="Re-enter your password" />
+          <PasswordInput
+            value={confirm}
+            onChangeText={setConfirm}
+            placeholder="Re-enter your password"
+            maxLength={12}
+          />
 
           <TouchableOpacity
             style={[s.button, loading && { opacity: 0.6 }]}

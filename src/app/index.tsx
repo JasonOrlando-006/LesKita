@@ -20,6 +20,10 @@ export default function LoginScreen() {
       setMsg({ text: 'Invalid email format.', ok: false });
       return;
     }
+    if (password.length < 6 || password.length > 12) {
+      setMsg({ text: 'Password must be 6-12 characters.', ok: false });
+      return;
+    }
 
     setLoading(true);
     setMsg(null);
@@ -68,7 +72,12 @@ export default function LoginScreen() {
           />
 
           <Text style={s.label}>Password</Text>
-          <PasswordInput value={password} onChangeText={setPassword} placeholder="Enter your password" />
+          <PasswordInput
+            value={password}
+            onChangeText={setPassword}
+            placeholder="Enter your password"
+            maxLength={12}
+          />
 
           <TouchableOpacity onPress={() => router.push('/forgot-password')}>
             <Text style={s.forgotLink}>Forgot Password?</Text>
