@@ -16,8 +16,8 @@ import {
   StarIcon,
   TagIcon,
 } from '../components/iconComp';
+import { StickyHeader } from '../components/stickyHeader';
 
-// Dummy data — replace with real search/filter logic once backend data exists.
 const DISTANCE_FILTERS = ['< 1 km', '1 - 3 km', '3 - 5 km', 'Seluruh Kota'];
 
 const QUICK_FILTERS = [
@@ -94,22 +94,24 @@ export default function SearchScreen() {
 
   return (
     <View style={s.screen}>
-      <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
-        {/* Top bar */}
-        <View style={s.topBar}>
-          <View>
-            <Text style={s.brand}>LesKita</Text>
-            <Text style={s.brandSub}>Cari Bimbel</Text>
-          </View>
-          <View style={s.topBarActions}>
-            <TouchableOpacity style={s.iconButton} onPress={() => router.push('/notification')}>
-              <BellIcon />
-            </TouchableOpacity>
-            <TouchableOpacity style={s.avatarSmall} onPress={() => router.push('/profile')}>
-              <PersonIcon size={18} color="#1F6F5C" />
-            </TouchableOpacity>
-          </View>
+      
+      {/* HEADER */}
+      <StickyHeader>
+        <View>
+          <Text style={s.brand}>LesKita</Text>
+          <Text style={s.brandSub}>Cari Bimbel</Text>
         </View>
+        <View style={s.topBarActions}>
+          <TouchableOpacity style={s.iconButton} onPress={() => router.push('/notification')}>
+            <BellIcon />
+          </TouchableOpacity>
+          <TouchableOpacity style={s.avatarSmall} onPress={() => router.push('/profile')}>
+            <PersonIcon size={18} color="#1F6F5C" />
+          </TouchableOpacity>
+        </View>
+      </StickyHeader>
+
+      <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
 
         {/* Search bar */}
         <View style={s.searchRow}>
@@ -311,9 +313,8 @@ export default function SearchScreen() {
 
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#F3F6F6' },
-  scroll: { paddingHorizontal: 18, paddingTop: 16 },
+  scroll: { paddingHorizontal: 18, paddingTop: 0 },
 
-  topBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   brand: { fontSize: 17, fontWeight: '700', color: '#1F6F5C' },
   brandSub: { fontSize: 12, color: '#6B7280', marginTop: -2 },
   topBarActions: { flexDirection: 'row', alignItems: 'center', gap: 12 },

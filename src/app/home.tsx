@@ -23,6 +23,7 @@ import {
   TranslateIcon,
   VerifiedIcon,
 } from '../components/iconComp';
+import { StickyHeader } from '../components/stickyHeader'; //agar header tetap di atas saat scroll dan tidak tertimpa status bar
 import { DEFAULT_LOCATION, LOCATIONS, Location } from '../data/locations';
 
 const CATEGORIES = [
@@ -90,7 +91,7 @@ export default function HomeScreen() {
   return (
     <View style={s.screen}>
       {/* HEADER */}
-      <View style={s.topBar}>
+      <StickyHeader>
         <View>
           <Text style={s.brand}>LesKita</Text>
           <Text style={s.brandSub}>Beranda</Text>
@@ -103,7 +104,7 @@ export default function HomeScreen() {
             <PersonIcon size={18} color="#1F6F5C" />
           </TouchableOpacity>
         </View>
-      </View>
+      </StickyHeader>
 
       <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
 
@@ -358,7 +359,6 @@ const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#F3F6F6' },
   scroll: { paddingHorizontal: 18, paddingTop: 0 },
 
-  topBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 18, paddingTop: 16, paddingBottom: 10, backgroundColor: '#F3F6F6' },
   brand: { fontSize: 17, fontWeight: '700', color: '#1F6F5C' },
   brandSub: { fontSize: 12, color: '#6B7280', marginTop: -2 },
   topBarActions: { flexDirection: 'row', alignItems: 'center', gap: 12 },

@@ -1,25 +1,26 @@
 import { router } from 'expo-router';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import {
-    BellIcon,
-    BookOpenIcon,
-    BookmarkIcon,
-    BriefcaseIcon,
-    CalendarIcon,
-    CheckCircleIcon,
-    ChevronRightIcon,
-    GroupIcon,
-    HomeIcon,
-    HouseKeyIcon,
-    LogoutIcon,
-    MessageIcon,
-    PersonIcon,
-    PinIcon,
-    SearchTabIcon,
-    SlidersIcon,
-    TargetIcon,
-    VerifiedIcon,
+  BellIcon,
+  BookOpenIcon,
+  BookmarkIcon,
+  BriefcaseIcon,
+  CalendarIcon,
+  CheckCircleIcon,
+  ChevronRightIcon,
+  GroupIcon,
+  HomeIcon,
+  HouseKeyIcon,
+  LogoutIcon,
+  MessageIcon,
+  PersonIcon,
+  PinIcon,
+  SearchTabIcon,
+  SlidersIcon,
+  TargetIcon,
+  VerifiedIcon,
 } from '../components/iconComp';
+import { StickyHeader } from '../components/stickyHeader';
 
 const STATS = [
   { label: 'Anak Terdaftar', value: '2' },
@@ -77,24 +78,25 @@ const SETTINGS_MENU = [
 export default function ProfileScreen() {
   return (
     <View style={s.screen}>
-      <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
-        <View style={s.topBar}>
-          <View style={s.brandRow}>
-            <BookOpenIcon size={22} color="#1F6F5C" />
-            <View style={{ marginLeft: 8 }}>
-              <Text style={s.brand}>LesKita</Text>
-              <Text style={s.brandSub}>Profil Saya</Text>
-            </View>
-          </View>
-          <View style={s.topBarActions}>
-            <TouchableOpacity style={s.iconButton} onPress={() => router.push('/notification')}>
-              <BellIcon />
-            </TouchableOpacity>
-            <View style={s.avatarSmall}>
-              <PersonIcon size={18} color="#1F6F5C" />
-            </View>
+      {/* HEADER */}
+      <StickyHeader>
+        <View style={s.brandRow}>
+          <View style={{ marginLeft: 8 }}>
+            <Text style={s.brand}>LesKita</Text>
+            <Text style={s.brandSub}>Profil Saya</Text>
           </View>
         </View>
+        <View style={s.topBarActions}>
+          <TouchableOpacity style={s.iconButton} onPress={() => router.push('/notification')}>
+            <BellIcon />
+          </TouchableOpacity>
+          <View style={s.avatarSmall}>
+            <PersonIcon size={18} color="#1F6F5C" />
+          </View>
+        </View>
+      </StickyHeader>
+
+      <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
 
         {/* PROFILE DATA */}
         <View style={s.profileCard}>
@@ -257,9 +259,8 @@ export default function ProfileScreen() {
 
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#F3F6F6' },
-  scroll: { paddingHorizontal: 18, paddingTop: 16 },
+  scroll: { paddingHorizontal: 18, paddingTop: 0 },
 
-  topBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   brandRow: { flexDirection: 'row', alignItems: 'center' },
   brand: { fontSize: 17, fontWeight: '700', color: '#1F6F5C' },
   brandSub: { fontSize: 12, color: '#6B7280', marginTop: -2 },
