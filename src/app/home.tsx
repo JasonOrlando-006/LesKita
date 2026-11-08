@@ -1,27 +1,30 @@
 import { router } from 'expo-router';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useState } from 'react';
+import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import {
-    ArrowRightIcon,
-    BellIcon,
-    BlocksIcon,
-    BookOpenIcon,
-    CalculatorIcon,
-    ChevronRightIcon,
-    FilterIcon,
-    GraduationCapIcon,
-    GroupIcon,
-    HomeIcon,
-    HouseKeyIcon,
-    PersonIcon,
-    PinIcon,
-    SearchIcon,
-    SearchTabIcon,
-    StarIcon,
-    TranslateIcon,
-    VerifiedIcon,
+  ArrowRightIcon,
+  BellIcon,
+  BlocksIcon,
+  BookOpenIcon,
+  BookmarkIcon,
+  CalculatorIcon,
+  CheckCircleIcon,
+  ChevronRightIcon,
+  FilterIcon,
+  GraduationCapIcon,
+  GroupIcon,
+  HomeIcon,
+  HouseKeyIcon,
+  PersonIcon,
+  PinIcon,
+  SearchIcon,
+  SearchTabIcon,
+  StarIcon,
+  TranslateIcon,
+  VerifiedIcon,
 } from '../components/iconComp';
+import { DEFAULT_LOCATION, LOCATIONS, Location } from '../data/locations';
 
-// Dummy data
 const CATEGORIES = [
   { id: 'sd', label: 'SD', Icon: GraduationCapIcon },
   { id: 'smp', label: 'SMP', Icon: BookOpenIcon },
@@ -82,35 +85,37 @@ const RECOMMENDED = [
 ];
 
 export default function HomeScreen() {
+  const [location, setLocation] = useState<Location>(DEFAULT_LOCATION);
+  const [pickerOpen, setPickerOpen] = useState(false);
   return (
     <View style={s.screen}>
-      <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
-        {/* Top bar */}
-        <View style={s.topBar}>
-          <View>
-            <Text style={s.brand}>LesKita</Text>
-            <Text style={s.brandSub}>Beranda</Text>
-          </View>
-          <View style={s.topBarActions}>
-            <TouchableOpacity style={s.iconButton} onPress={() => router.push('/notification')}>
-              <BellIcon />
-            </TouchableOpacity>
-            <TouchableOpacity style={s.avatarSmall} onPress={() => router.push('/profile')}>
-              <PersonIcon size={18} color="#1F6F5C" />
-            </TouchableOpacity>
-          </View>
+      {/* HEADER */}
+      <View style={s.topBar}>
+        <View>
+          <Text style={s.brand}>LesKita</Text>
+          <Text style={s.brandSub}>Beranda</Text>
         </View>
+        <View style={s.topBarActions}>
+          <TouchableOpacity style={s.iconButton} onPress={() => router.push('/notification')}>
+            <BellIcon />
+          </TouchableOpacity>
+          <TouchableOpacity style={s.avatarSmall} onPress={() => router.push('/profile')}>
+            <PersonIcon size={18} color="#1F6F5C" />
+          </TouchableOpacity>
+        </View>
+      </View>
 
-        {/* Location + level */}
+      <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
+
+        {/* Location */}
         <View style={s.locationRow}>
-          <View style={s.locationLeft}>
+          <TouchableOpacity style={s.locationLeft} onPress={() => setPickerOpen(true)}>
             <PinIcon size={15} />
-            <Text style={s.locationText}>Sukolilo, Surabaya</Text>
+            <Text style={s.locationText}>
+              {location.district}, {location.city}
+            </Text>
             <Text style={s.locationChange}>(Ubah)</Text>
-          </View>
-          <View style={s.levelBadge}>
-            <Text style={s.levelBadgeText}>Level Pintar</Text>
-          </View>
+          </TouchableOpacity>
         </View>
 
         {/* Greeting */}
@@ -225,11 +230,11 @@ export default function HomeScreen() {
           </View>
         ))}
 
-        {/* Recommended */}
+        {/* Recommendation */}
         <View style={s.sectionHeader}>
           <View>
             <Text style={s.sectionTitle}>Rekomendasi Hemat & Berkualitas</Text>
-            <Text style={s.sectionSub}>Pilihan terfavorit orang tua di sekitar Sukolilo</Text>
+            <Text style={s.sectionSub}>Pilihan terfavorit orang tua di sekitar {location.district}</Text>
           </View>
           <ChevronRightIcon />
         </View>
@@ -242,7 +247,7 @@ export default function HomeScreen() {
                   <Text style={s.recommendBadgeText}>{item.badge}</Text>
                 </View>
                 <TouchableOpacity style={s.bookmarkButton}>
-                  <View />
+                  <BookmarkIcon size={14} />
                 </TouchableOpacity>
               </View>
               <View style={s.recommendTopRow}>
@@ -264,7 +269,7 @@ export default function HomeScreen() {
           ))}
         </ScrollView>
 
-        {/* Become a tutor??? */}
+        {/* Become a tutor option */}
         <View style={s.ctaCard}>
           <View style={s.ctaIcon}>
             <HouseKeyIcon />
@@ -283,7 +288,7 @@ export default function HomeScreen() {
         <View style={{ height: 90 }} />
       </ScrollView>
 
-      {/* Bottom navigation bar */}
+      {/* NAVBAR */}
       <View style={s.bottomNav}>
         <View style={s.navItem}>
           <HomeIcon color="#1F6F5C" />
@@ -302,15 +307,58 @@ export default function HomeScreen() {
           <Text style={s.navLabel}>Profil Saya</Text>
         </TouchableOpacity>
       </View>
+      <Modal
+        visible={pickerOpen}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setPickerOpen(false)}
+      >
+        <View style={s.modalBackdrop}>
+          <TouchableOpacity
+            style={{ flex: 1 }}
+            activeOpacity={1}
+            onPress={() => setPickerOpen(false)}
+          />
+          <View style={s.sheet}>
+            <View style={s.sheetHandle} />
+            <Text style={s.sheetTitle}>Pilih Lokasi</Text>
+            <Text style={s.sheetSub}>Kota di Jawa Tengah</Text>
+            <ScrollView style={{ maxHeight: 380 }} showsVerticalScrollIndicator={false}>
+              {LOCATIONS.map((loc) => {
+                const active = loc.id === location.id;
+                return (
+                  <TouchableOpacity
+                    key={loc.id}
+                    style={[s.locationOption, active && s.locationOptionActive]}
+                    onPress={() => {
+                      setLocation(loc);
+                      setPickerOpen(false);
+                    }}
+                  >
+                    <View style={[s.locationOptionIcon, active && s.locationOptionIconActive]}>
+                      <PinIcon size={16} color={active ? '#FFFFFF' : '#1F6F5C'} />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={s.locationOptionCity}>{loc.city}</Text>
+                      <Text style={s.locationOptionDistrict}>Kec. {loc.district}</Text>
+                    </View>
+                    {active && <CheckCircleIcon size={18} color="#1F6F5C" />}
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
 
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#F3F6F6' },
-  scroll: { paddingHorizontal: 18, paddingTop: 16 },
+  scroll: { paddingHorizontal: 18, paddingTop: 0 },
 
-  topBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  topBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 18, paddingTop: 16, paddingBottom: 10, backgroundColor: '#F3F6F6' },
   brand: { fontSize: 17, fontWeight: '700', color: '#1F6F5C' },
   brandSub: { fontSize: 12, color: '#6B7280', marginTop: -2 },
   topBarActions: { flexDirection: 'row', alignItems: 'center', gap: 12 },
@@ -329,8 +377,30 @@ const s = StyleSheet.create({
   locationLeft: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   locationText: { fontSize: 13, fontWeight: '600', color: '#1A2B2A' },
   locationChange: { fontSize: 12, color: '#1F6F5C', fontWeight: '600' },
-  levelBadge: { backgroundColor: '#FDEBD2', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4 },
-  levelBadgeText: { fontSize: 11, fontWeight: '700', color: '#B4760E' },
+
+  modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' },
+  sheet: {
+    backgroundColor: '#FFFFFF', borderTopLeftRadius: 22, borderTopRightRadius: 22,
+    paddingHorizontal: 18, paddingTop: 10, paddingBottom: 28,
+  },
+  sheetHandle: {
+    alignSelf: 'center', width: 40, height: 4, borderRadius: 2,
+    backgroundColor: '#E2E8EE', marginBottom: 14,
+  },
+  sheetTitle: { fontSize: 16, fontWeight: '700', color: '#1A2B2A' },
+  sheetSub: { fontSize: 12, color: '#6B7280', marginTop: 2, marginBottom: 12 },
+  locationOption: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    paddingVertical: 12, paddingHorizontal: 10, borderRadius: 12,
+  },
+  locationOptionActive: { backgroundColor: '#E6F0EE' },
+  locationOptionIcon: {
+    width: 36, height: 36, borderRadius: 18, backgroundColor: '#E6F0EE',
+    alignItems: 'center', justifyContent: 'center',
+  },
+  locationOptionIconActive: { backgroundColor: '#1F6F5C' },
+  locationOptionCity: { fontSize: 14, fontWeight: '700', color: '#1A2B2A' },
+  locationOptionDistrict: { fontSize: 11, color: '#6B7280', marginTop: 1 },
 
   greetingRow: { flexDirection: 'row', alignItems: 'center', marginTop: 14 },
   greetingSmall: { fontSize: 13, color: '#6B7280' },
