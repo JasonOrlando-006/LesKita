@@ -24,6 +24,7 @@ import {
   VerifiedIcon,
 } from '../components/iconComp';
 import { StickyHeader } from '../components/stickyHeader'; //agar header tetap di atas saat scroll dan tidak tertimpa status bar
+import { NEARBY_BIMBEL, RECOMMENDED_BIMBEL, formatRupiah } from '../data/bimbelDetail';
 import { DEFAULT_LOCATION, LOCATIONS, Location } from '../data/locations';
 
 const CATEGORIES = [
@@ -34,60 +35,10 @@ const CATEGORIES = [
   { id: 'inggris', label: 'Bahasa Inggris', Icon: TranslateIcon },
 ];
 
-const NEARBY = [
-  {
-    id: '1',
-    name: 'Bimbel Bu Retno Ceria',
-    subject: 'SD Tematik & Calistung Menyenangkan',
-    distance: '0.4 km',
-    rating: 4.9,
-    reviews: 42,
-    price: 'Rp 25.000',
-    priceUnit: '/ sesi',
-    tags: ['Maks. 5 anak per sesi', 'Bisa Guru Datang ke Rumah'],
-    verified: true,
-  },
-  {
-    id: '2',
-    name: 'Rumah Belajar Bintang Prestasi',
-    subject: 'Matematika & Sains Terpadu SMP',
-    distance: '0.8 km',
-    rating: 4.9,
-    reviews: 56,
-    price: 'Rp 200.000',
-    priceUnit: '/ bln',
-    note: '4x seminggu',
-    tags: ['Fasilitas Modul Lengkap', 'Konsultasi PR Harian'],
-    verified: true,
-  },
-];
-
-const RECOMMENDED = [
-  {
-    id: '3',
-    name: 'English Corner Pak Dimas',
-    subject: 'Percakapan & Grammar Dasar Anak',
-    distance: '1.1 km',
-    rating: 4.95,
-    price: 'Rp 30.000',
-    priceUnit: '/ sesi',
-    badge: 'Diskon 20%',
-  },
-  {
-    id: '4',
-    name: 'Rumah Tahsin Baiti',
-    subject: 'Iqro Cepat & Tahsin',
-    distance: '0.9 km',
-    rating: 4.9,
-    price: 'Rp 20.000',
-    priceUnit: '/ sesi',
-    badge: 'Bisa Privat',
-  },
-];
-
 export default function HomeScreen() {
   const [location, setLocation] = useState<Location>(DEFAULT_LOCATION);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const openDetail = (id: string) => router.push({ pathname: '/bimbel/[id]', params: { id } });
   return (
     <View style={s.screen}>
       {/* HEADER */}
@@ -196,18 +147,23 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {NEARBY.map((item) => (
-          <View key={item.id} style={s.nearbyCard}>
+        {NEARBY_BIMBEL.map((item) => (
+          <TouchableOpacity
+            key={item.id}
+            style={s.nearbyCard}
+            activeOpacity={0.8}
+            onPress={() => openDetail(item.id)}
+          >
             <View style={s.nearbyImage} />
             <View style={s.nearbyInfo}>
               <View style={s.nearbyTopRow}>
                 <View style={s.distanceTag}>
-                  <Text style={s.distanceTagText}>{item.distance}</Text>
+                  <Text style={s.distanceTagText}>{item.distanceKm} km</Text>
                 </View>
                 <View style={s.ratingRow}>
                   <StarIcon />
                   <Text style={s.ratingText}>
-                    {item.rating} ({item.reviews})
+                    {item.rating} ({item.reviewCount})
                   </Text>
                 </View>
               </View>
@@ -216,7 +172,7 @@ export default function HomeScreen() {
               <View style={s.priceRow}>
                 {item.verified && <VerifiedIcon size={14} />}
                 <Text style={s.priceLabel}>Mulai </Text>
-                <Text style={s.priceValue}>{item.price}</Text>
+                <Text style={s.priceValue}>{formatRupiah(item.price)}</Text>
                 <Text style={s.priceUnit}> {item.priceUnit}</Text>
                 {item.note && <Text style={s.priceNote}> ({item.note})</Text>}
               </View>
@@ -228,7 +184,7 @@ export default function HomeScreen() {
                 ))}
               </View>
             </View>
-          </View>
+          </TouchableOpacity>
         ))}
 
         {/* Recommendation */}
@@ -241,12 +197,19 @@ export default function HomeScreen() {
         </View>
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.recommendRow}>
-          {RECOMMENDED.map((item) => (
-            <View key={item.id} style={s.recommendCard}>
+          {RECOMMENDED_BIMBEL.map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              style={s.recommendCard}
+              activeOpacity={0.8}
+              onPress={() => openDetail(item.id)}
+            >
               <View style={s.recommendImage}>
-                <View style={s.recommendBadge}>
-                  <Text style={s.recommendBadgeText}>{item.badge}</Text>
-                </View>
+                {item.badge && (
+                  <View style={s.recommendBadge}>
+                    <Text style={s.recommendBadgeText}>{item.badge}</Text>
+                  </View>
+                )}
                 <TouchableOpacity style={s.bookmarkButton}>
                   <BookmarkIcon size={14} />
                 </TouchableOpacity>
@@ -254,7 +217,7 @@ export default function HomeScreen() {
               <View style={s.recommendTopRow}>
                 <View style={s.distanceInline}>
                   <PinIcon size={12} />
-                  <Text style={s.distanceInlineText}>{item.distance}</Text>
+                  <Text style={s.distanceInlineText}>{item.distanceKm} km</Text>
                 </View>
                 <View style={s.ratingRow}>
                   <StarIcon size={12} />
@@ -264,9 +227,9 @@ export default function HomeScreen() {
               <Text style={s.recommendTitle} numberOfLines={1}>{item.name}</Text>
               <Text style={s.recommendSubtitle} numberOfLines={1}>{item.subject}</Text>
               <Text style={s.recommendPrice}>
-                {item.price} <Text style={s.priceUnit}>{item.priceUnit}</Text>
+                {formatRupiah(item.price)} <Text style={s.priceUnit}>{item.priceUnit}</Text>
               </Text>
-            </View>
+            </TouchableOpacity>
           ))}
         </ScrollView>
 
